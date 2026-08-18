@@ -1,7 +1,16 @@
 # 使い方: /function umitate_gauge:setup/load_box {slot:"名前"}
 # 保存済みの範囲(umitate_gauge:boxes内の指定名)を、現在の計測範囲(umitate_gauge:box)に反映する
 
-$execute store success score #load_ok current_blocks run data modify storage umitate_gauge:box set from storage umitate_gauge:boxes $(slot)
+# 1. 指定名の保存内容を一時領域(umitate_gauge:staging box)にコピー（存在しなければ失敗として扱う）
+$execute store success score #load_ok current_blocks run data modify storage umitate_gauge:staging box set from storage umitate_gauge:boxes $(slot)
+
+# 2. 一時領域から現在の計測範囲へ、項目ごとにコピー（data modifyは項目名の指定が必須のため）
+execute if score #load_ok current_blocks matches 1 run data modify storage umitate_gauge:box x1 set from storage umitate_gauge:staging box.x1
+execute if score #load_ok current_blocks matches 1 run data modify storage umitate_gauge:box y1 set from storage umitate_gauge:staging box.y1
+execute if score #load_ok current_blocks matches 1 run data modify storage umitate_gauge:box z1 set from storage umitate_gauge:staging box.z1
+execute if score #load_ok current_blocks matches 1 run data modify storage umitate_gauge:box x2 set from storage umitate_gauge:staging box.x2
+execute if score #load_ok current_blocks matches 1 run data modify storage umitate_gauge:box y2 set from storage umitate_gauge:staging box.y2
+execute if score #load_ok current_blocks matches 1 run data modify storage umitate_gauge:box z2 set from storage umitate_gauge:staging box.z2
 
 execute if score #load_ok current_blocks matches 1 run function umitate_gauge:setup/sync_scores_from_box
 execute if score #load_ok current_blocks matches 1 run function umitate_gauge:setup/calc_max_space
